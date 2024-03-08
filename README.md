@@ -71,3 +71,71 @@ The parameter above are configuration file for the CloudWatch agent, which defin
 
 ### Step 3:  Create an EC2 instance, attach the role created in Step 1
 
+Now that we have created an IAM Role and also created a paramaeter in the Account System Manager Console, let's create an EC2 instance and that roles we created eralier. But note that `SSM` will have access to the paparameter we created and by attaching the role to the EC2 instance, EC2 will also have access to the parameters.
+
+
+  1. Navigate to the EC2 console, select instance. Click on the launch instance on top right.
+
+  2. Now we will need to launch an `Amazon linux 2 instance` and attach the role we created in `step 1`. Follow the images below to attach IAM role to your instance.
+
+
+
+  3. Install CloudWatch agent. Create a file name it `script.sh` and paste the shell script below.
+
+  ```
+  #!/bin/bash
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+unzip AmazonCloudWatchAgent.zip
+sudo ./install.sh
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/alarm/AWS-CWAgentLinConfig -s
+
+  
+  ```
+
+- Make the file executable run `sudo chmod +x script.sh`
+- Save and run the file run `./script.sh`
+
+
+4. Start the CloudWatch agent ` sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start
+`
+
+5. Verify if CloudWatch is installed and successfully running ` sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+`
+
+### Step 4: Monitor your metric in CloudWatch
+
+Before we can monitor our EC2 instance metrics, create a new policy and attach it to our IAM role so that the role does not lack permissions to perform the ec2: DescribeTags action, which is necessary for the CloudWatch agent to retrieve EC2 instance tags.
+
+  1. Create a new Policy
+
+  - In the IAM console navigation menu, click on the policy and on the top right, select create policy. Follow the image below to ceate a new policy for the IAM role. Use the Json code snippet below for your policy.
+
+  ```
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeTags"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+  ```
+
+  2. Let's recall the parameters we crated for our EC2 metric, now let's view the metric on ClodWatch console.
+
+  - Navigate to the CloudWatch console. In the navigation menu, select all metrics.
+
+  - Select the browser tab and search and click on CWAgent
+
+  - Select either of the two as highlighted in the image below to view any of the metrics we defined in our parameter.
+
+  - We can view our metric the memory percent of our EC2 instance.
+
+  We have successfully installed and configured ClouWatch to monitor your EC2 instance.
+
+
