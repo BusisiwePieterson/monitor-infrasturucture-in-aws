@@ -6,14 +6,25 @@
 
 In this project I manage AWS infrastucture using CloudWatch and CloudTrail, gaining insights into system perfomance, security and operational health.
 
+
+
 ### Step 1: Create an IAM Roe with CloudWatchFull Access and SSMFullAccess
 
   1. Navigate to the IAM console
   2. In the IAM Console navigation click on roles.
 
+![images](images/Screenshot_2.png)
 
 
   3. Now create the images to create a role with `CloudWatchFullAccess` and `SSMFullAccess` policy
+
+![images](images/Screenshot_3.png)
+![images](images/Screenshot_4.png)
+![images](images/Screenshot_5.png) 
+![images](images/Screenshot_6.png)
+![images](images/Screenshot_7.png)
+![images](images/Screenshot_8.png)
+
 
 ###  Step 2: Create a parameter in System Manager  
 
@@ -21,6 +32,9 @@ Now that wehave created an IAM role, we need to create a parameter in the system
 
   1. Navigate to AWS System Manager Console
   2. In the AWS System Manager navigate menu, select parameter store
+
+  ![images](images/Screenshot_9.png)
+
   3. Create a new parameter and paste the code snippet below.
 
   ```
@@ -47,6 +61,9 @@ Now that wehave created an IAM role, we need to create a parameter in the system
 } 
  
   ```
+
+![images](images/Screenshot_10.png)
+![images](images/Screenshot_11.png)
 
 The parameter above are configuration file for the CloudWatch agent, which defines the metrics that will be collected from your EC2 instance and sent to CloudWatch.
 
@@ -78,9 +95,12 @@ Now that we have created an IAM Role and also created a paramaeter in the Accoun
 
   2. Now we will need to launch an `Amazon linux 2 instance` and attach the role we created in `step 1`. Follow the images below to attach IAM role to your instance.
 
-
+![images](images/Screenshot_13.png)
+![images](images/Screenshot_14.png)
 
   3. Install CloudWatch agent. Create a file name it `script.sh` and paste the shell script below.
+
+  ![images](images/Screenshot_15.png)
 
   ```
   #!/bin/bash
@@ -95,12 +115,17 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-c
 - Make the file executable run `sudo chmod +x script.sh`
 - Save and run the file run `./script.sh`
 
+![images](images/Screenshot_16.png)
 
 4. Start the CloudWatch agent ` sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start
 `
 
+![images](images/Screenshot_17.png)
+
 5. Verify if CloudWatch is installed and successfully running ` sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
 `
+
+![images](images/Screenshot_18.png)
 
 ### Step 4: Monitor your metric in CloudWatch
 
@@ -108,7 +133,7 @@ Before we can monitor our EC2 instance metrics, create a new policy and attach i
 
   1. Create a new Policy
 
-  - In the IAM console navigation menu, click on the policy and on the top right, select create policy. Follow the image below to ceate a new policy for the IAM role. Use the Json code snippet below for your policy.
+  - In the IAM console navigation menu, click on the policy and on the top right, select create policy. Follow the images below to ceate a new policy for the IAM role. Use the Json code snippet below for your policy.
 
   ```
   {
@@ -126,16 +151,32 @@ Before we can monitor our EC2 instance metrics, create a new policy and attach i
 
   ```
 
+  ![images](images/Screenshot_19.png)
+  ![images](images/Screenshot_20.png)
+  ![images](images/Screenshot_21.png)
+  ![images](images/Screenshot_22.png)
+  ![images](images/Screenshot_23.png)
+ 
+
   2. Let's recall the parameters we crated for our EC2 metric, now let's view the metric on ClodWatch console.
 
   - Navigate to the CloudWatch console. In the navigation menu, select all metrics.
 
+   ![images](images/Screenshot_24.png)
+
   - Select the browser tab and search and click on CWAgent
+
+   ![images](images/Screenshot_25.png)
 
   - Select either of the two as highlighted in the image below to view any of the metrics we defined in our parameter.
 
+ ![images](images/Screenshot_26.png)
+
   - We can view our metric the memory percent of our EC2 instance.
 
-  We have successfully installed and configured ClouWatch to monitor your EC2 instance.
+  We have successfully installed and configured CloudWatch to monitor your EC2 instance.
+
+
+# THE END !!!
 
 
